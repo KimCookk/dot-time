@@ -1,23 +1,35 @@
 import 'dart:async';
 import 'package:dot_time/feature/home/presentation/animated_dot_grid.dart';
 import 'package:dot_time/feature/home/presentation/digital_text.dart';
-import 'package:dot_time/feature/home/presentation/goal_info.dart';
+import 'package:dot_time/feature/home/presentation/progress_to_date_display.dart';
 import 'package:dot_time/feature/home/presentation/real_time_clock.dart';
+import 'package:dot_time/feature/home/provider/home_state.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
-  final String _target = '25.12.31';
-  final double _percent = 78.6;
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // Future.microtask(() {
+    //   context.read<HomeState>().updatePercent();
+    // });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        child: Center(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -26,14 +38,11 @@ class HomeScreen extends StatelessWidget {
               RealTimeClock(),
               const SizedBox(height: 32),
               // 퍼센트 도트 격자
-              AnimatedDotGrid(percent: _percent),
+              AnimatedDotGrid(),
 
               const Spacer(),
-              GoalInfo(
-                target: _target,
-                percent: _percent,
-                duration: Duration(milliseconds: 400 * _percent.ceil()),
-              ),
+              ProgressToTargetText(),
+
               const Spacer(),
               // 문구
               Text(

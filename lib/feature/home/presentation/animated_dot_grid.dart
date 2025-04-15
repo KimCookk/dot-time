@@ -1,53 +1,32 @@
 import 'dart:async';
+import 'package:dot_time/feature/home/provider/home_state.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AnimatedDotGrid extends StatefulWidget {
-  final double percent; // 예: 75.8
-
-  const AnimatedDotGrid({required this.percent, super.key});
+  const AnimatedDotGrid({super.key});
 
   @override
   State<AnimatedDotGrid> createState() => _AnimatedDotGridState();
 }
 
 class _AnimatedDotGridState extends State<AnimatedDotGrid> {
-  int currentFilled = 0;
-  late int targetDots;
+  int filledDotCount = 0;
   Timer? _timer;
 
-  // 애니메이션 관련 상수 (튜닝 편하게)
   static const Duration dotFadeDuration = Duration(milliseconds: 300);
-  static const Duration dotFillInterval = Duration(milliseconds: 100);
+  static const Duration dotFillInterval = Duration(milliseconds: 80);
 
   @override
   void initState() {
     super.initState();
-    targetDots = widget.percent.ceil();
-    _startFilling();
-  }
+    final percent = context.read<HomeState>().percent;
+    final targetDots = percent.ceil();
 
-  @override
-  void didUpdateWidget(covariant AnimatedDotGrid oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.percent != oldWidget.percent) {
-      _resetAndStart();
-    }
-  }
-
-  void _resetAndStart() {
-    _timer?.cancel();
-    setState(() {
-      currentFilled = 0;
-      targetDots = widget.percent.ceil();
-    });
-    _startFilling();
-  }
-
-  void _startFilling() {
     _timer = Timer.periodic(dotFillInterval, (timer) {
-      if (currentFilled < targetDots) {
+      if (filledDotCount < targetDots) {
         setState(() {
-          currentFilled++;
+          filledDotCount++;
         });
       } else {
         timer.cancel();
@@ -63,7 +42,8 @@ class _AnimatedDotGridState extends State<AnimatedDotGrid> {
 
   @override
   Widget build(BuildContext context) {
-    final double partial = widget.percent % 1;
+    final percent = context.watch<HomeState>().percent;
+    final int targetDots = percent.ceil();
 
     return SizedBox(
       width: 240,
@@ -72,33 +52,32 @@ class _AnimatedDotGridState extends State<AnimatedDotGrid> {
         runSpacing: 4,
         children: List.generate(100, (index) {
           final int number = index + 1;
-          final double percent = widget.percent;
 
-          if (number <= currentFilled) {
+          if (number <= filledDotCount) {
             final bool isPartialDot =
                 (number == targetDots && percent != targetDots);
             final double endOpacity =
                 isPartialDot ? (percent - percent.floor()) : 1.0;
 
             return TweenAnimationBuilder<double>(
-              key: ValueKey(index), // 애니메이션 안정성 확보
+              key: ValueKey(index),
               tween: Tween(begin: 0.0, end: endOpacity),
               duration: dotFadeDuration,
               curve: Curves.easeOut,
               builder: (context, value, child) {
                 final alpha = (value * 255).round();
-                return _dotBox(color: Colors.green.withAlpha(alpha));
+                return _BuildDot(color: Colors.green.withAlpha(alpha));
               },
             );
           } else {
-            return _dotBox(color: Colors.grey[800]!); // 어두운 회색으로 약간 감성
+            return _BuildDot(color: Colors.grey[800]!);
           }
         }),
       ),
     );
   }
 
-  Widget _dotBox({required Color color}) {
+  Widget _BuildDot({required Color color}) {
     return Stack(
       children: [
         Container(

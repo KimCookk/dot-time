@@ -14,3 +14,7 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+# chore. Provider 적용하기.
+# -> 진행중
+# fix. 최초 애니메이션, dot 채워지는 시간과 퍼센트 올라가는 시간이 상이. 수정필요
