@@ -20,18 +20,6 @@ class _AnimatedDotGridState extends State<AnimatedDotGrid> {
   @override
   void initState() {
     super.initState();
-    final percent = context.read<HomeState>().percent;
-    final targetDots = percent.ceil();
-
-    _timer = Timer.periodic(dotFillInterval, (timer) {
-      if (filledDotCount < targetDots) {
-        setState(() {
-          filledDotCount++;
-        });
-      } else {
-        timer.cancel();
-      }
-    });
   }
 
   @override
@@ -42,8 +30,18 @@ class _AnimatedDotGridState extends State<AnimatedDotGrid> {
 
   @override
   Widget build(BuildContext context) {
-    final percent = context.watch<HomeState>().percent;
-    final int targetDots = percent.ceil();
+    double percent = context.watch<HomeState>().percent;
+    int targetDots = percent.floor();
+
+    _timer = Timer.periodic(dotFillInterval, (timer) {
+      if (filledDotCount < targetDots) {
+        setState(() {
+          filledDotCount++;
+        });
+      } else {
+        timer.cancel();
+      }
+    });
 
     return SizedBox(
       width: 240,
@@ -65,12 +63,12 @@ class _AnimatedDotGridState extends State<AnimatedDotGrid> {
               duration: dotFadeDuration,
               curve: Curves.easeOut,
               builder: (context, value, child) {
-                final alpha = (value * 255).round();
-                return _BuildDot(color: Colors.green.withAlpha(alpha));
+                final alpha = (255 - value * 255).round();
+                return _BuildDot(color: Colors.grey.withAlpha(alpha));
               },
             );
           } else {
-            return _BuildDot(color: Colors.grey[800]!);
+            return _BuildDot(color: Colors.grey);
           }
         }),
       ),
@@ -84,7 +82,7 @@ class _AnimatedDotGridState extends State<AnimatedDotGrid> {
           width: 20,
           height: 20,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Colors.black,
             borderRadius: BorderRadius.circular(4),
           ),
         ),
