@@ -5,15 +5,19 @@ import 'package:intl/intl.dart';
 
 class HomeState extends ChangeNotifier {
   double _percent = 0.0;
+  int alarmIntervalPercent = 5;
   Timer? _timer;
 
   DateTime _targetDateTime = DateTime(DateTime.now().year, 04, 25, 11, 59, 59);
   DateTime _startDateTime = DateTime(DateTime.now().year, 04, 25, 10, 0, 0);
 
+  bool _isInitDrawDotGrid = true;
+
   get percent => _percent;
   get targetDateTime => _targetDateTime;
   get startDateTime => _startDateTime;
   get targetDateTimeString => DateFormat('yyyy-MM-dd').format(_targetDateTime);
+  get isInitDrawDotGrid => _isInitDrawDotGrid;
 
   HomeState() {
     startAutoUpdate();
@@ -45,6 +49,10 @@ class HomeState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setIsInitDrawDotGrid(bool isInitDrawDotGrid) {
+    _isInitDrawDotGrid = isInitDrawDotGrid;
+  }
+
   double calculatePercent() {
     final now = DateTime.now();
     final totalDuration =
@@ -68,6 +76,7 @@ class HomeState extends ChangeNotifier {
 
     if (curPercent != prePercent) {
       setPercent(_percent);
+      setIsInitDrawDotGrid(true);
     }
   }
 }

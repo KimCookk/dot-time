@@ -30,7 +30,9 @@ class _AnimatedDotGridState extends State<AnimatedDotGrid> {
 
   @override
   Widget build(BuildContext context) {
-    double percent = context.watch<HomeState>().percent;
+    var state = context.watch<HomeState>();
+    double percent = state.percent;
+    bool isDrawDotGrid = state.isInitDrawDotGrid;
     int targetDots = percent.floor();
 
     _timer = Timer.periodic(dotFillInterval, (timer) {
@@ -49,25 +51,30 @@ class _AnimatedDotGridState extends State<AnimatedDotGrid> {
         spacing: 4,
         runSpacing: 4,
         children: List.generate(100, (index) {
-          final int number = index + 1;
+          if (!isDrawDotGrid) {
+            final int number = index + 1;
+            if (number <= filledDotCount) {
+              final bool isPartialDot =
+                  (number == targetDots && percent != targetDots);
+              final double endOpacity =
+                  isPartialDot ? (percent - percent.floor()) : 1.0;
 
-          if (number <= filledDotCount) {
-            final bool isPartialDot =
-                (number == targetDots && percent != targetDots);
-            final double endOpacity =
-                isPartialDot ? (percent - percent.floor()) : 1.0;
-
-            return TweenAnimationBuilder<double>(
-              key: ValueKey(index),
-              tween: Tween(begin: 0.0, end: endOpacity),
-              duration: dotFadeDuration,
-              curve: Curves.easeOut,
-              builder: (context, value, child) {
-                final alpha = (255 - value * 255).round();
-                return _BuildDot(color: Colors.grey.withAlpha(alpha));
-              },
-            );
+              return TweenAnimationBuilder<double>(
+                key: ValueKey(index),
+                tween: Tween(begin: 0.0, end: endOpacity),
+                duration: dotFadeDuration,
+                curve: Curves.easeOut,
+                builder: (context, value, child) {
+                  final alpha = (255 - value * 255).round();
+                  return _BuildDot(color: Colors.grey.withAlpha(alpha));
+                },
+              );
+            } else {
+              return _BuildDot(color: Colors.grey);
+            }
           } else {
+            filledDotCount = 0;
+            state.setIsInitDrawDotGrid(false);
             return _BuildDot(color: Colors.grey);
           }
         }),

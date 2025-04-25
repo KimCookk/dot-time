@@ -4,6 +4,7 @@ import 'package:dot_time/feature/home/presentation/digital_text.dart';
 import 'package:dot_time/feature/home/presentation/progress_to_date_display.dart';
 import 'package:dot_time/feature/home/presentation/real_time_clock.dart';
 import 'package:dot_time/feature/home/provider/home_state.dart';
+import 'package:dot_time/feature/setting/presentation/setting_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -27,6 +28,34 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        actions: [
+          IconButton(
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                backgroundColor: const Color.fromARGB(255, 41, 41, 41),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(30)),
+                ),
+                builder: (_) => const SettingScreen(),
+              );
+            },
+            icon: Icon(Icons.settings),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.refresh,
+            ),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.ios_share),
+          ),
+        ],
+      ),
       backgroundColor: Colors.black,
       body: SafeArea(
         child: Center(
