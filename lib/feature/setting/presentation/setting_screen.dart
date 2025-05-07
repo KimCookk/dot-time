@@ -1,4 +1,5 @@
 import 'package:dot_time/feature/home/provider/home_state.dart';
+import 'package:dot_time/feature/setting/provider/setting_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:intl/intl.dart';
@@ -12,29 +13,29 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
-  DateTime? _setDate;
-  DateTime? _setTime;
-  int? _setAlarmIntervalPercent;
-
   void _pickDate() {
+    SettingState state = context.read<SettingState>();
+    DateTime setDate = state.targetDateTime;
+
     DatePicker.showDatePicker(
       context,
-      currentTime: _setDate,
+      currentTime: setDate,
       showTitleActions: true,
       locale: LocaleType.ko,
       onChanged: (date) {},
       onConfirm: (date) {
-        setState(() {
-          _setDate = date;
-        });
+        context.read<SettingState>().setTargetDate(date);
       },
     );
   }
 
   void _pickTime() {
+    SettingState state = context.read<SettingState>();
+    DateTime setTime = state.targetDateTime;
+
     DatePicker.showTimePicker(
       context,
-      currentTime: _setTime,
+      currentTime: setTime,
       showTitleActions: true,
       locale: LocaleType.ko,
       showSecondsColumn: false,
@@ -42,62 +43,26 @@ class _SettingScreenState extends State<SettingScreen> {
         print('change $time');
       },
       onConfirm: (time) {
-        setState(() {
-          _setTime = time;
-        });
+        state.setTargetTime(time);
       },
     );
   }
 
-  void _selectSetAlarmIntervalPercent(int setAlarmIntervalPercent) {
-    setState(() {
-      _setAlarmIntervalPercent = setAlarmIntervalPercent;
-    });
-  }
-
   void _saveSettings() {
-    // TODO: 저장 로직 연동 (예: Provider, SharedPreferences 등)
-    if (_setDate != null && _setTime != null) {
-      context.read<HomeState>().setTargetDateTime(
-            DateTime(
-              _setDate!.year,
-              _setDate!.month,
-              _setDate!.day,
-              _setTime!.hour,
-              _setTime!.minute,
-            ),
-          );
-    }
-
+    SettingState state = context.read<SettingState>();
+    Map<String, dynamic> setting = state.save();
+    HomeState homeState = context.read<HomeState>();
+    homeState.setTargetDateTime(setting['targetDateTime']);
     Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    final state = context.watch<HomeState>();
-    final DateTime dateTime = state.targetDateTime;
+    SettingState state = context.watch<SettingState>();
 
-    _setDate = _setDate ??
-        DateTime(
-          dateTime.year,
-          dateTime.month,
-          dateTime.day,
-        );
-
-    _setTime = _setTime ??
-        DateTime(
-          dateTime.year,
-          dateTime.month,
-          dateTime.day,
-          dateTime.hour,
-          dateTime.minute,
-        );
-
-    _setAlarmIntervalPercent =
-        _setAlarmIntervalPercent ?? state.alarmIntervalPercent;
-
-    final dateStr = DateFormat('yyyy-MM-dd').format(_setDate!);
-    final timeStr = DateFormat('HH:mm').format(_setTime!);
+    final dateStr = DateFormat('yyyy-MM-dd').format(state.targetDateTime);
+    final timeStr = DateFormat('HH:mm').format(state.targetDateTime);
+    final alarmIntervalPercent = state.alarmIntervalPercent;
 
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -179,7 +144,7 @@ class _SettingScreenState extends State<SettingScreen> {
             Container(
               width: 200,
               child: DropdownButtonFormField<int>(
-                value: _setAlarmIntervalPercent,
+                value: alarmIntervalPercent,
                 dropdownColor: Colors.grey,
                 iconEnabledColor: Colors.white,
                 decoration: InputDecoration(
@@ -190,7 +155,6 @@ class _SettingScreenState extends State<SettingScreen> {
                     borderSide: BorderSide.none,
                   ),
                 ),
-                //isExpanded: true,
                 style: const TextStyle(color: Colors.white, fontSize: 16),
                 items: [1, 5, 10, 25]
                     .map((e) => DropdownMenuItem(
@@ -202,7 +166,8 @@ class _SettingScreenState extends State<SettingScreen> {
                         ))
                     .toList(),
                 onChanged: (val) {
-                  if (val != null) _selectSetAlarmIntervalPercent(val);
+                  if (val != null)
+                    context.read<SettingState>().setAlarmIntervalPercent(val);
                 },
               ),
             ),

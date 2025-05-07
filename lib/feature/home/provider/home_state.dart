@@ -1,19 +1,24 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class HomeState extends ChangeNotifier {
   double _percent = 0.0;
+  int _filledDot = 0;
   int alarmIntervalPercent = 5;
-  Timer? _timer;
+  Timer? _updatePercentTimer;
 
-  DateTime _targetDateTime = DateTime(DateTime.now().year, 04, 25, 11, 59, 59);
-  DateTime _startDateTime = DateTime(DateTime.now().year, 04, 25, 10, 0, 0);
+  static const Duration dotFillInterval = Duration(milliseconds: 80);
 
-  bool _isInitDrawDotGrid = true;
+  DateTime _targetDateTime = DateTime(DateTime.now().year, 12, 31, 11, 59, 59);
+  DateTime _startDateTime = DateTime(DateTime.now().year, 01, 01, 0, 0, 1);
+
+  bool _isInitDrawDotGrid = false;
 
   get percent => _percent;
+  get filledDot => _filledDot;
   get targetDateTime => _targetDateTime;
   get startDateTime => _startDateTime;
   get targetDateTimeString => DateFormat('yyyy-MM-dd').format(_targetDateTime);
@@ -24,14 +29,10 @@ class HomeState extends ChangeNotifier {
   }
 
   void startAutoUpdate() {
-    _timer?.cancel(); // 중복 방지
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+    _updatePercentTimer?.cancel(); // 중복 방지
+    _updatePercentTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       updatePercent();
     });
-  }
-
-  void disposeTimer() {
-    _timer?.cancel();
   }
 
   void setPercent(double percent) {
@@ -51,6 +52,17 @@ class HomeState extends ChangeNotifier {
 
   void setIsInitDrawDotGrid(bool isInitDrawDotGrid) {
     _isInitDrawDotGrid = isInitDrawDotGrid;
+  }
+
+  void setFilledDot(int filledDot) {
+    _filledDot = filledDot;
+    notifyListeners();
+  }
+
+  void refresh() {
+    _isInitDrawDotGrid = true;
+    _percent = _percent;
+    notifyListeners();
   }
 
   double calculatePercent() {
@@ -75,8 +87,8 @@ class HomeState extends ChangeNotifier {
     var curPercent = calculatePercent().toStringAsFixed(1);
 
     if (curPercent != prePercent) {
-      setPercent(_percent);
-      setIsInitDrawDotGrid(true);
+      _isInitDrawDotGrid = true;
+      notifyListeners();
     }
   }
 }

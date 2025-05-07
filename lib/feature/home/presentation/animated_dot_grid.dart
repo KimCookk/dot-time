@@ -28,11 +28,9 @@ class _AnimatedDotGridState extends State<AnimatedDotGrid> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    var state = context.watch<HomeState>();
+  void _startTimer() {
+    var state = context.read<HomeState>();
     double percent = state.percent;
-    bool isDrawDotGrid = state.isInitDrawDotGrid;
     int targetDots = percent.floor();
 
     _timer = Timer.periodic(dotFillInterval, (timer) {
@@ -44,6 +42,27 @@ class _AnimatedDotGridState extends State<AnimatedDotGrid> {
         timer.cancel();
       }
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var state = context.watch<HomeState>();
+    double percent = state.percent;
+    bool isDrawDotGrid = state.isInitDrawDotGrid;
+    int targetDots = percent.floor();
+
+    if (isDrawDotGrid) {
+      _timer = Timer.periodic(dotFillInterval, (timer) {
+        state.setIsInitDrawDotGrid(false);
+        if (filledDotCount < targetDots) {
+          setState(() {
+            filledDotCount++;
+          });
+        } else {
+          timer.cancel();
+        }
+      });
+    }
 
     return SizedBox(
       width: 240,
@@ -74,7 +93,6 @@ class _AnimatedDotGridState extends State<AnimatedDotGrid> {
             }
           } else {
             filledDotCount = 0;
-            state.setIsInitDrawDotGrid(false);
             return _BuildDot(color: Colors.grey);
           }
         }),

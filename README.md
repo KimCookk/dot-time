@@ -20,9 +20,7 @@ samples, guidance on mobile development, and a full API reference.
 
 
 # feat. 실시간 퍼센트 업데이트 
-#    -> 수정중, animated_dot_grid view에서 문제
-#    원래는 initState 시 Timer가 시작되어 setState를 통해 build되는 식
-#    다시 생각해 볼 필요성이 있음.
+# provider home state 동작 정리가 필요 ( 써보자 )
 
 # feat. Target date 설정 필요
 # feat. 퍼센트 별 알람 필요

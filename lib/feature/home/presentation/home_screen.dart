@@ -5,6 +5,7 @@ import 'package:dot_time/feature/home/presentation/progress_to_date_display.dart
 import 'package:dot_time/feature/home/presentation/real_time_clock.dart';
 import 'package:dot_time/feature/home/provider/home_state.dart';
 import 'package:dot_time/feature/setting/presentation/setting_screen.dart';
+import 'package:dot_time/feature/setting/provider/setting_state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -27,6 +28,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var state = context.read<HomeState>();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -39,13 +42,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(30)),
                 ),
-                builder: (_) => const SettingScreen(),
+                builder: (_) => ChangeNotifierProvider(
+                    create: (_) => SettingState(
+                        targetDateTime: state.targetDateTime,
+                        alarmIntervalPercent: state.alarmIntervalPercent),
+                    child: SettingScreen()),
               );
             },
             icon: Icon(Icons.settings),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              context.read<HomeState>().refresh();
+            },
             icon: Icon(
               Icons.refresh,
             ),
