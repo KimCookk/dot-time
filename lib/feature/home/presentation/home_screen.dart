@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:dot_time/feature/home/presentation/animated_dot_grid.dart';
 import 'package:dot_time/feature/home/presentation/digital_text.dart';
 import 'package:dot_time/feature/home/presentation/progress_to_date_display.dart';
+import 'package:dot_time/feature/home/presentation/quote_display.dart';
 import 'package:dot_time/feature/home/presentation/real_time_clock.dart';
 import 'package:dot_time/feature/home/provider/home_state.dart';
 import 'package:dot_time/feature/setting/presentation/setting_screen.dart';
@@ -83,15 +84,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const Spacer(),
               // 문구
-              Text(
-                'Regret for wasted time is\nmore wasted time.',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 16,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
+              QuoteDisplay(),
+
+              const SizedBox(height: 48),
             ],
           ),
         ),

@@ -15,12 +15,8 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
-# chore. Provider 적용하기.
-# fix. 최초 애니메이션, dot 채워지는 시간과 퍼센트 올라가는 시간이 상이.
-
-
-# feat. 실시간 퍼센트 업데이트 
-# provider home state 동작 정리가 필요 ( 써보자 )
 
 # feat. Target date 설정 필요
 # feat. 퍼센트 별 알람 필요
+# todo. 아직 100퍼센트가 아닌데 100퍼센트로 표출
+# todo. 명언 랜덤 표출

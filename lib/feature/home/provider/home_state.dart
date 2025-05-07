@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:ffi';
 
+import 'package:dot_time/core/constants/quotes.dart';
+import 'package:dot_time/core/service/random_pick_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -10,6 +12,9 @@ class HomeState extends ChangeNotifier {
   int alarmIntervalPercent = 5;
   Timer? _updatePercentTimer;
 
+  late String _quote;
+  late RandomPickService<String> _quotePicker;
+
   static const Duration dotFillInterval = Duration(milliseconds: 80);
 
   DateTime _targetDateTime = DateTime(DateTime.now().year, 12, 31, 11, 59, 59);
@@ -17,15 +22,19 @@ class HomeState extends ChangeNotifier {
 
   bool _isInitDrawDotGrid = false;
 
-  get percent => _percent;
-  get filledDot => _filledDot;
-  get targetDateTime => _targetDateTime;
-  get startDateTime => _startDateTime;
-  get targetDateTimeString => DateFormat('yyyy-MM-dd').format(_targetDateTime);
-  get isInitDrawDotGrid => _isInitDrawDotGrid;
+  double get percent => _percent;
+  int get filledDot => _filledDot;
+  DateTime get targetDateTime => _targetDateTime;
+  DateTime get startDateTime => _startDateTime;
+  String get targetDateTimeString =>
+      DateFormat('yyyy-MM-dd').format(_targetDateTime);
+  bool get isInitDrawDotGrid => _isInitDrawDotGrid;
+  String get quote => _quote;
 
   HomeState() {
     startAutoUpdate();
+    _quotePicker = RandomPickService<String>(quotes);
+    pickQuotes();
   }
 
   void startAutoUpdate() {
@@ -33,6 +42,11 @@ class HomeState extends ChangeNotifier {
     _updatePercentTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       updatePercent();
     });
+  }
+
+  void pickQuotes() {
+    _quote = _quotePicker.getRandomItem();
+    notifyListeners();
   }
 
   void setPercent(double percent) {
@@ -60,8 +74,11 @@ class HomeState extends ChangeNotifier {
   }
 
   void refresh() {
+    _percent = 0;
+    notifyListeners();
     _isInitDrawDotGrid = true;
     _percent = _percent;
+    _quote = _quotePicker.getRandomItem();
     notifyListeners();
   }
 
